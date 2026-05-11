@@ -1,9 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Users, FileText, Settings, ShieldCheck } from 'lucide-react';
 
+const API = import.meta.env.VITE_API_URL;
+
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeRoles: 0,
+    totalRequests: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { data } = await axios.get(`${API}/api/admin/stats`);
+        setStats({
+          totalUsers: data.totalUsers ?? 0,
+          activeRoles: data.activeRoles ?? 0,
+          totalRequests: data.totalRequests ?? 0,
+        });
+      } catch (error) {
+        console.error('Failed to load admin dashboard stats', error);
+        setStats({ totalUsers: 0, activeRoles: 0, totalRequests: 0 });
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -14,7 +40,7 @@ const AdminDashboard = () => {
           </div>
           <div>
             <p className="text-gray-500 text-sm font-medium">Total Users</p>
-            <h3 className="text-2xl font-bold text-gray-800">124</h3>
+            <h3 className="text-2xl font-bold text-gray-800">{stats.totalUsers}</h3>
           </div>
         </div>
         
@@ -24,7 +50,7 @@ const AdminDashboard = () => {
           </div>
           <div>
             <p className="text-gray-500 text-sm font-medium">Active Roles</p>
-            <h3 className="text-2xl font-bold text-gray-800">4</h3>
+            <h3 className="text-2xl font-bold text-gray-800">{stats.activeRoles}</h3>
           </div>
         </div>
 
@@ -34,7 +60,7 @@ const AdminDashboard = () => {
           </div>
           <div>
             <p className="text-gray-500 text-sm font-medium">Total Requests Flow</p>
-            <h3 className="text-2xl font-bold text-gray-800">892</h3>
+            <h3 className="text-2xl font-bold text-gray-800">{stats.totalRequests}</h3>
           </div>
         </div>
 
@@ -44,7 +70,7 @@ const AdminDashboard = () => {
           </div>
           <div>
             <p className="text-gray-500 text-sm font-medium">System Health</p>
-            <h3 className="text-2xl font-bold text-gray-800">100%</h3>
+            <h3 className="text-2xl font-bold text-gray-800">Live</h3>
           </div>
         </div>
       </div>

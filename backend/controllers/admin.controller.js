@@ -85,6 +85,28 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const [users, requestCount] = await Promise.all([
+      prisma.user.findMany({
+        select: { role: true }
+      }),
+      prisma.request.count()
+    ]);
+
+    const activeRoles = new Set(users.map((user) => user.role)).size;
+
+    res.json({
+      totalUsers: users.length,
+      activeRoles,
+      totalRequests: requestCount
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
