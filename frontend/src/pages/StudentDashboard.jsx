@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { FilePlus, Clock, CheckCircle, XCircle } from 'lucide-react';
 
+const API = import.meta.env.VITE_API_URL;
+
 const StudentDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0 });
@@ -11,7 +13,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/requests/student');
+        const { data } = await axios.get(`${API}/api/requests/student`);
         const pending = data.filter(r => r.status.includes('PENDING')).length;
         const approved = data.filter(r => r.status === 'APPROVED').length;
         const rejected = data.filter(r => r.status === 'REJECTED').length;

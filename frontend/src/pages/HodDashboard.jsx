@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { FileSignature, CheckCircle, XCircle, Eye, FileText, Clock, Upload, PenTool } from 'lucide-react';
 import DocumentPreview from '../components/DocumentPreview';
 
+const API = import.meta.env.VITE_API_URL;
+
 const HodDashboard = () => {
   const { user } = useAuth();
   const [requests, setRequests] = useState([]);
@@ -17,7 +19,7 @@ const HodDashboard = () => {
 
   const fetchProfile = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/users/profile');
+      const { data } = await axios.get(`${API}/api/users/profile`);
       setProfile(data);
     } catch (error) {
        console.error("Profile fetch error", error);
@@ -27,8 +29,8 @@ const HodDashboard = () => {
   const fetchRequests = async () => {
     try {
       const [reqsRes, statsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/requests/hod'),
-        axios.get('http://localhost:5000/api/requests/hod/stats')
+        axios.get(`${API}/api/requests/hod`),
+        axios.get(`${API}/api/requests/hod/stats`)
       ]);
       setRequests(reqsRes.data);
       setStats(statsRes.data);
@@ -54,7 +56,7 @@ const HodDashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/users/signature', formData, {
+      await axios.post(`${API}/api/users/signature`, formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}` 
@@ -72,7 +74,7 @@ const HodDashboard = () => {
   const handleApprove = async (id) => {
     if (!window.confirm('Approve request and finalize with HOD signature?')) return;
     try {
-      await axios.post(`http://localhost:5000/api/requests/${id}/approve/hod`);
+      await axios.post(`${API}/api/requests/${id}/approve/hod`);
       alert('Request approved successfully');
       fetchRequests();
     } catch (error) {
@@ -83,7 +85,7 @@ const HodDashboard = () => {
   const handleReject = async (id) => {
     if (!reason) return alert('Please provide a reason for rejection');
     try {
-      await axios.post(`http://localhost:5000/api/requests/${id}/reject/hod`, { reason });
+      await axios.post(`${API}/api/requests/${id}/reject/hod`, { reason });
       alert('Request rejected');
       setRejectingId(null);
       setReason('');
@@ -144,7 +146,7 @@ const HodDashboard = () => {
               </div>
               <div className="mt-3 flex items-center space-x-4">
                 <div className="bg-white border border-green-200 rounded p-2 h-16 w-32 flex items-center justify-center overflow-hidden">
-                  <img src={`http://localhost:5000/${profile.signatureUrl}`} alt="Your Signature" className="max-h-full max-w-full object-contain" />
+                  <img src={`${API}/${profile.signatureUrl}`} alt="Your Signature" className="max-h-full max-w-full object-contain" />
                 </div>
               </div>
             </div>

@@ -7,6 +7,8 @@ import Draggable from 'react-draggable';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 
+const API = import.meta.env.VITE_API_URL;
+
 // Set up PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -138,7 +140,7 @@ const SubmitRequest = () => {
     formData.append('coordinates', JSON.stringify(dbCoords));
 
     try {
-      await axios.post('http://localhost:5000/api/requests', formData, {
+      await axios.post(`${API}/api/requests`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       navigate('/student/history');

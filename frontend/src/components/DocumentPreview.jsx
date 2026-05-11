@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { FileText, X } from 'lucide-react';
 
+const API = import.meta.env.VITE_API_URL;
+
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
   import.meta.url,
@@ -13,7 +15,7 @@ const DocumentPreview = ({ request, onClose }) => {
 
   if (!request) return null;
 
-  const fileUrl = `http://localhost:5000/${request.documentPath}`;
+  const fileUrl = `${API}/${request.documentPath}`;
   const coordinates = request.coordinates || [];
 
   return (

@@ -4,6 +4,8 @@ import axios from 'axios';
 import { User, Lock, Mail, Hash, Briefcase, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
 
+const API = import.meta.env.VITE_API_URL;
+
 const RegisterStaff = () => {
   const [formData, setFormData] = useState({
     employeeId: '',
@@ -30,7 +32,7 @@ const RegisterStaff = () => {
 
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/auth/register-staff', {
+      await axios.post(`${API}/api/auth/register-staff`, {
         employeeId: formData.employeeId,
         name: formData.name,
         email: formData.email,

@@ -4,6 +4,8 @@ import axios from 'axios';
 import { User, Lock, Mail, Hash, BookOpen, GraduationCap, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
 
+const API = import.meta.env.VITE_API_URL;
+
 const Register = () => {
   const [formData, setFormData] = useState({
     rollNumber: '',
@@ -32,7 +34,7 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
+      await axios.post(`${API}/api/auth/register`, formData);
       navigate('/login', { state: { message: 'Registration successful! You can now login.' } });
     } catch (error) {
       setError(error.response?.data?.message || 'Registration failed');

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Download, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
+const API = import.meta.env.VITE_API_URL;
+
 const RequestHistory = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +11,7 @@ const RequestHistory = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/requests/student');
+        const { data } = await axios.get(`${API}/api/requests/student`);
         setRequests(data);
       } catch (error) {
         console.error(error);
@@ -82,7 +84,7 @@ const RequestHistory = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     {request.status === 'APPROVED' && request.signedDocPath ? (
                       <a 
-                        href={`http://localhost:5000/${request.signedDocPath}`} 
+                        href={`${API}/${request.signedDocPath}`} 
                         target="_blank" rel="noreferrer"
                         className="inline-flex items-center text-primary-600 hover:text-primary-900 transition-colors"
                       >

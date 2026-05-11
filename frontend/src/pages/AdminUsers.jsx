@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { UserPlus, Hash, Trash2 } from 'lucide-react';
 
+const API = import.meta.env.VITE_API_URL;
+
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [rollNo, setRollNo] = useState('');
@@ -14,7 +16,7 @@ const AdminUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/admin/users');
+      const { data } = await axios.get(`${API}/api/admin/users`);
       setUsers(data);
     } catch (error) {
       console.error(error);
@@ -26,7 +28,7 @@ const AdminUsers = () => {
   const handleAddRoll = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/add-roll-number', { rollNumber: rollNo });
+      await axios.post(`${API}/api/admin/add-roll-number`, { rollNumber: rollNo });
       alert('Roll number added for pre-registration');
       setRollNo('');
     } catch (error) {
@@ -37,7 +39,7 @@ const AdminUsers = () => {
   const handleAddStaff = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/admin/add-staff', newStaff);
+      await axios.post(`${API}/api/admin/add-staff`, newStaff);
       alert('Staff pre-registered successfully');
       setNewStaff({ employeeId: '', role: 'FACULTY' });
       fetchUsers();
@@ -49,7 +51,7 @@ const AdminUsers = () => {
   const handleAssignAdvisor = async (studentId, facultyId) => {
     if (!facultyId) return;
     try {
-      await axios.post('http://localhost:5000/api/admin/assign-advisor', { studentId, facultyId });
+      await axios.post(`${API}/api/admin/assign-advisor`, { studentId, facultyId });
       fetchUsers();
     } catch (error) {
       alert(error.response?.data?.message || 'Error assigning advisor');
@@ -62,7 +64,7 @@ const AdminUsers = () => {
     }
     
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`);
+      await axios.delete(`${API}/api/admin/users/${userId}`);
       alert('User deleted successfully');
       fetchUsers();
     } catch (error) {

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
+const API = import.meta.env.VITE_API_URL;
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -21,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/users/profile');
+      const { data } = await axios.get(`${API}/api/users/profile`);
       setUser(data);
     } catch (error) {
       console.error('Failed to fetch profile', error);
@@ -33,7 +34,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (loginId, password) => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/auth/login', { loginId, password });
+      const { data } = await axios.post(`${API}/api/auth/login`, { loginId, password });
       localStorage.setItem('token', data.token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       setUser(data.user);
