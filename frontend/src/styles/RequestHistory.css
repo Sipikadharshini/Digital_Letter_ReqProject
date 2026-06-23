@@ -1,0 +1,175 @@
+/* RequestHistory.css */
+
+.request-history-container {
+    background-color: var(--color-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-gray-100);
+    overflow: hidden;
+}
+
+.request-history-header {
+    padding: var(--spacing-5) var(--spacing-6);
+    border-bottom: 1px solid var(--color-gray-100);
+    background-color: rgba(249, 250, 251, 0.5); /* bg-gray-50/50 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.request-history-header-content {
+    /* No specific styles needed for this div beyond its children */
+}
+
+.request-history-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-800);
+}
+
+.request-history-description {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-1);
+}
+
+.request-history-loading {
+    padding: var(--spacing-8);
+    text-align: center;
+    color: var(--color-gray-500);
+}
+
+.request-history-no-requests {
+    padding: var(--spacing-16);
+    text-align: center;
+}
+
+.request-history-no-requests-icon {
+    margin-left: auto;
+    margin-right: auto;
+    height: var(--spacing-12);
+    width: var(--spacing-12);
+    color: var(--color-gray-300);
+    margin-bottom: var(--spacing-4);
+}
+
+.request-history-no-requests-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-800);
+}
+
+.request-history-no-requests-message {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-1);
+}
+
+.request-history-table-wrapper {
+    overflow-x: auto;
+}
+
+.request-history-table {
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+.request-history-table-head {
+    background-color: var(--color-gray-50);
+}
+
+.request-history-table-row-head {
+    /* divide-y divide-gray-200 is handled by tbody tr border-top */
+}
+
+.request-history-table-th {
+    padding: var(--spacing-3) var(--spacing-6);
+    text-align: left;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em; /* tracking-wider */
+}
+
+.request-history-table-th-right {
+    text-align: right;
+}
+
+.request-history-table-body {
+    background-color: var(--color-white);
+}
+
+.request-history-table-body tr {
+    border-top: 1px solid var(--color-gray-100); /* divide-y divide-gray-100 */
+}
+
+.request-history-table-row {
+    transition: background-color var(--transition-base);
+}
+
+.request-history-table-row:hover {
+    background-color: rgba(249, 250, 251, 0.5); /* hover:bg-gray-50/50 */
+}
+
+.request-history-table-td {
+    padding: var(--spacing-4) var(--spacing-6);
+    white-space: nowrap;
+    font-size: var(--font-size-sm);
+}
+
+.request-history-date {
+    color: var(--color-gray-600);
+}
+
+.request-history-type {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-900);
+}
+
+.request-history-note {
+    color: var(--color-red-500);
+}
+
+.request-history-document-cell {
+    text-align: right;
+    font-weight: var(--font-weight-medium);
+}
+
+.request-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-1) 0.625rem; /* px-2.5 py-1 */
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+}
+
+.request-status-icon {
+    margin-right: var(--spacing-1);
+}
+
+.request-status-pending-advisor { background-color: var(--color-yellow-50); color: var(--color-yellow-700); }
+.request-status-pending-hod { background-color: var(--color-blue-50); color: var(--color-blue-700); }
+.request-status-approved { background-color: var(--color-green-50); color: var(--color-green-700); }
+.request-status-rejected { background-color: var(--color-red-50); color: var(--color-red-700); }
+.request-status-default { background-color: var(--color-gray-50); color: var(--color-gray-700); }
+
+.request-history-download-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-primary-600);
+    transition: color var(--transition-base);
+}
+
+.request-history-download-link:hover {
+    color: var(--color-primary-900);
+}
+
+.request-history-download-icon {
+    margin-right: var(--spacing-1);
+}
+
+.request-history-not-available {
+    color: var(--color-gray-400);
+}

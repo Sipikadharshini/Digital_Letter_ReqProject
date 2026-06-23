@@ -1,5 +1,7 @@
-const prisma = require('../prismaClient');
 const path = require('path');
+const User = require('../models/User');
+const Request = require('../models/Request');
+const SignatureCoordinate = require('../models/SignatureCoordinate');
 const pdfService = require('../services/pdf.service');
 const emailService = require('../services/email.service');
 
@@ -17,21 +19,21 @@ exports.createRequest = async (req, res) => {
       parsedCoords = JSON.parse(coordinates);
     }
 
-    const newRequest = await prisma.request.create({
-      data: {
-        studentId: req.user.userId,
-        type,
-        status: 'PENDING_ADVISOR',
-        documentPath: 'uploads/' + file.filename,
-        coordinates: {
-          create: parsedCoords.map(c => ({
-            role: c.role,
-            x: parseFloat(c.x),
-            y: parseFloat(c.y)
-          }))
-        }
-      }
+    const newRequest = await Request.create({
+      studentId: req.user.userId,
+      type,
+      status: 'PENDING_ADVISOR',
+      documentPath: 'uploads/' + file.filename
     });
+
+    if (parsedCoords.length > 0) {
+      await SignatureCoordinate.insertMany(parsedCoords.map(c => ({
+        requestId: newRequest.id,
+        role: c.role,
+        x: parseFloat(c.x),
+        y: parseFloat(c.y)
+      })));
+    }
 
     res.status(201).json(newRequest);
   } catch (error) {
@@ -42,10 +44,7 @@ exports.createRequest = async (req, res) => {
 
 exports.getStudentRequests = async (req, res) => {
   try {
-    const requests = await prisma.request.findMany({
-      where: { studentId: req.user.userId },
-      orderBy: { createdAt: 'desc' }
-    });
+    const requests = await Request.find({ studentId: req.user.userId }).sort({ createdAt: -1 });
     res.json(requests);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -54,19 +53,14 @@ exports.getStudentRequests = async (req, res) => {
 
 exports.getFacultyPendingRequests = async (req, res) => {
   try {
-    const requests = await prisma.request.findMany({
-      where: { 
-        status: 'PENDING_ADVISOR',
-        student: {
-          advisorId: req.user.userId
-        }
-      },
-      include: { 
-        student: { select: { name: true, rollNumber: true, year: true, batch: true } },
-        coordinates: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    const advisedStudents = await User.find({ advisorId: req.user.userId }).select('_id');
+    const requests = await Request.find({
+      status: 'PENDING_ADVISOR',
+      studentId: { $in: advisedStudents.map((student) => student._id) }
+    })
+      .populate('student', 'name rollNumber year batch')
+      .populate('coordinates')
+      .sort({ createdAt: -1 });
     res.json(requests);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -75,14 +69,10 @@ exports.getFacultyPendingRequests = async (req, res) => {
 
 exports.getHODPendingRequests = async (req, res) => {
   try {
-    const requests = await prisma.request.findMany({
-      where: { status: 'PENDING_HOD' },
-      include: { 
-        student: { select: { name: true, rollNumber: true, year: true, batch: true } },
-        coordinates: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    const requests = await Request.find({ status: 'PENDING_HOD' })
+      .populate('student', 'name rollNumber year batch')
+      .populate('coordinates')
+      .sort({ createdAt: -1 });
     res.json(requests);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -91,10 +81,9 @@ exports.getHODPendingRequests = async (req, res) => {
 
 exports.getFacultyDashboardStats = async (req, res) => {
   try {
-    const requests = await prisma.request.findMany({
-      where: {
-        student: { advisorId: req.user.userId }
-      }
+    const advisedStudents = await User.find({ advisorId: req.user.userId }).select('_id');
+    const requests = await Request.find({
+      studentId: { $in: advisedStudents.map((student) => student._id) }
     });
 
     const stats = {
@@ -112,10 +101,8 @@ exports.getFacultyDashboardStats = async (req, res) => {
 
 exports.getHodDashboardStats = async (req, res) => {
   try {
-    const requests = await prisma.request.findMany({
-      where: {
-        status: { in: ['PENDING_HOD', 'APPROVED', 'REJECTED'] }
-      }
+    const requests = await Request.find({
+      status: { $in: ['PENDING_HOD', 'APPROVED', 'REJECTED'] }
     });
 
     const stats = {
@@ -134,45 +121,45 @@ exports.getHodDashboardStats = async (req, res) => {
 exports.facultyApprove = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Add signature logic to PDF
-    const reqData = await prisma.request.findUnique({
-      where: { id },
-      include: { coordinates: true, student: true }
-    });
+    const reqData = await Request.findById(id)
+      .populate('coordinates')
+      .populate('student');
+
+    console.log('📋 Faculty Approve - Request Data:', { id, status: reqData?.status, coordsCount: reqData?.coordinates?.length });
+    console.log('📋 Coordinates:', reqData?.coordinates);
 
     if (!reqData || reqData.status !== 'PENDING_ADVISOR') {
       return res.status(400).json({ message: 'Invalid request' });
     }
 
     const coord = reqData.coordinates.find(c => c.role === 'FACULTY');
-    
+    console.log('🎯 Found FACULTY coordinate:', coord);
+
     if (coord) {
-      const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
-      
+      const user = await User.findById(req.user.userId);
+
       if (!user.signatureUrl) {
-         return res.status(400).json({ message: 'Signature missing. Please upload your signature in the dashboard first.' });
+        return res.status(400).json({ message: 'Signature missing. Please upload your signature in the dashboard first.' });
       }
 
       const inputPath = path.join(__dirname, '..', reqData.documentPath);
       const outputPath = path.join(__dirname, '..', 'uploads', `signed_faculty_${id}.pdf`);
-      
+
+      console.log('🔄 Calling addSignatureToPdf with:', { x: coord.x, y: coord.y, role: coord.role });
+
       await pdfService.addSignatureToPdf(inputPath, {
         x: coord.x, y: coord.y, name: user.name, role: 'Faculty Advisor', signatureUrl: user.signatureUrl
       }, outputPath);
-      
-      await prisma.request.update({
-        where: { id },
-        data: { 
-          status: 'PENDING_HOD',
-          documentPath: `uploads/signed_faculty_${id}.pdf` // Update document path to the signed one
-        }
+
+      await Request.findByIdAndUpdate(id, {
+        status: 'PENDING_HOD',
+        documentPath: `uploads/signed_faculty_${id}.pdf` // Update document path to the signed one
       });
     } else {
-       await prisma.request.update({
-        where: { id },
-        data: { status: 'PENDING_HOD' }
-      });
+      console.log('⚠ No FACULTY coordinate found, skipping signature');
+      await Request.findByIdAndUpdate(id, { status: 'PENDING_HOD' });
     }
 
     // Send Faculty Approval Email
@@ -183,7 +170,7 @@ exports.facultyApprove = async (req, res) => {
 
     res.json({ message: 'Request approved by Faculty' });
   } catch (error) {
-    console.error(error);
+    console.error('❌ Faculty Approve Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -192,17 +179,11 @@ exports.facultyReject = async (req, res) => {
   try {
     const { id } = req.params;
     const { reason } = req.body;
-    
-    // Fetch request to get student details
-    const reqData = await prisma.request.findUnique({
-      where: { id },
-      include: { student: true }
-    });
 
-    await prisma.request.update({
-      where: { id },
-      data: { status: 'REJECTED', rejectionReason: reason }
-    });
+    // Fetch request to get student details
+    const reqData = await Request.findById(id).populate('student');
+
+    await Request.findByIdAndUpdate(id, { status: 'REJECTED', rejectionReason: reason });
 
     // Send Faculty Rejection Email
     if (reqData && reqData.student?.email) {
@@ -219,45 +200,53 @@ exports.facultyReject = async (req, res) => {
 exports.hodApprove = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const reqData = await prisma.request.findUnique({
-      where: { id },
-      include: { coordinates: true, student: true }
-    });
+
+    const reqData = await Request.findById(id)
+      .populate('coordinates')
+      .populate('student');
+
+    console.log('📋 HOD Approve - Request Data:', { id, status: reqData?.status, coordsCount: reqData?.coordinates?.length });
+    console.log('📋 Coordinates:', reqData?.coordinates);
 
     if (!reqData || reqData.status !== 'PENDING_HOD') {
       return res.status(400).json({ message: 'Invalid request' });
     }
 
     const coord = reqData.coordinates.find(c => c.role === 'HOD');
-    
+    console.log('🎯 Found HOD coordinate:', coord);
+
     let finalDocPath = reqData.documentPath;
 
     if (coord) {
-      const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
-      
+      const user = await User.findById(req.user.userId);
+
       if (!user.signatureUrl) {
-         return res.status(400).json({ message: 'Signature missing. Please upload your signature in the dashboard first.' });
+        return res.status(400).json({ message: 'Signature missing. Please upload your signature in the dashboard first.' });
       }
 
       const inputPath = path.join(__dirname, '..', reqData.documentPath);
       const outputFilename = `final_signed_${id}.pdf`;
       const outputPath = path.join(__dirname, '..', 'uploads', outputFilename);
-      
+
+      console.log('🔄 Calling addSignatureToPdf with:', { x: coord.x, y: coord.y, role: coord.role });
+
       await pdfService.addSignatureToPdf(inputPath, {
         x: coord.x, y: coord.y, name: user.name, role: 'HOD', signatureUrl: user.signatureUrl
       }, outputPath);
-      
+
       finalDocPath = `uploads/${outputFilename}`;
+    } else {
+      console.log('⚠ No HOD coordinate found, using previous document');
     }
 
-    const updated = await prisma.request.update({
-      where: { id },
-      data: { 
+    const updated = await Request.findByIdAndUpdate(
+      id,
+      {
         status: 'APPROVED',
         signedDocPath: finalDocPath
-      }
-    });
+      },
+      { returnDocument: 'after' }
+    );
 
     // Send HOD Fully Approved Email
     if (reqData.student?.email) {
@@ -267,7 +256,7 @@ exports.hodApprove = async (req, res) => {
 
     res.json({ message: 'Request approved by HOD', request: updated });
   } catch (error) {
-    console.error(error);
+    console.error('❌ HOD Approve Error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -278,15 +267,9 @@ exports.hodReject = async (req, res) => {
     const { reason } = req.body;
 
     // Fetch request to get student details
-    const reqData = await prisma.request.findUnique({
-      where: { id },
-      include: { student: true }
-    });
+    const reqData = await Request.findById(id).populate('student');
 
-    await prisma.request.update({
-      where: { id },
-      data: { status: 'REJECTED', rejectionReason: reason }
-    });
+    await Request.findByIdAndUpdate(id, { status: 'REJECTED', rejectionReason: reason });
 
     // Send HOD Rejection Email
     if (reqData && reqData.student?.email) {

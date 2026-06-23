@@ -1,19 +1,20 @@
-const prisma = require('../prismaClient');
 const bcrypt = require('bcrypt');
+const User = require('../models/User');
+const Request = require('../models/Request');
+const PreRegisteredStudent = require('../models/PreRegisteredStudent');
+const PreRegisteredStaff = require('../models/PreRegisteredStaff');
 
 exports.addPreRegisteredStudent = async (req, res) => {
   try {
     const { rollNumber } = req.body;
     
     // Check if exists
-    const existing = await prisma.preRegisteredStudent.findUnique({ where: { rollNumber } });
+    const existing = await PreRegisteredStudent.findOne({ rollNumber });
     if (existing) {
       return res.status(400).json({ message: 'Roll number already in pre-registration list.' });
     }
 
-    const preReg = await prisma.preRegisteredStudent.create({
-      data: { rollNumber }
-    });
+    const preReg = await PreRegisteredStudent.create({ rollNumber });
 
     res.status(201).json({ message: 'Roll number added successfully', preReg });
   } catch (error) {
@@ -30,14 +31,12 @@ exports.addPreRegisteredStaff = async (req, res) => {
       return res.status(400).json({ message: 'Invalid role. Must be FACULTY or HOD' });
     }
 
-    const existing = await prisma.preRegisteredStaff.findUnique({ where: { employeeId } });
+    const existing = await PreRegisteredStaff.findOne({ employeeId });
     if (existing) {
       return res.status(400).json({ message: 'Employee ID already in pre-registration list.' });
     }
 
-    const preReg = await prisma.preRegisteredStaff.create({
-      data: { employeeId, role }
-    });
+    const preReg = await PreRegisteredStaff.create({ employeeId, role });
 
     res.status(201).json({ message: 'Employee ID added successfully', preReg });
   } catch (error) {
@@ -51,21 +50,18 @@ exports.assignAdvisor = async (req, res) => {
     const { studentId, facultyId } = req.body;
 
     // Check if faculty exists and has correct role
-    const faculty = await prisma.user.findUnique({ where: { id: facultyId } });
+    const faculty = await User.findById(facultyId);
     if (!faculty || faculty.role !== 'FACULTY') {
       return res.status(400).json({ message: 'Invalid Faculty Advisor' });
     }
 
     // Check if student exists
-    const student = await prisma.user.findUnique({ where: { id: studentId } });
+    const student = await User.findById(studentId);
     if (!student || student.role !== 'STUDENT') {
       return res.status(400).json({ message: 'Invalid Student' });
     }
 
-    await prisma.user.update({
-      where: { id: studentId },
-      data: { advisorId: facultyId }
-    });
+    await User.findByIdAndUpdate(studentId, { advisorId: facultyId });
 
     res.json({ message: 'Advisor assigned successfully' });
   } catch (error) {
@@ -76,9 +72,7 @@ exports.assignAdvisor = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true, rollNumber: true, employeeId: true, advisorId: true, isActivated: true }
-    });
+    const users = await User.find().select('name email role rollNumber employeeId advisorId isActivated');
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -88,10 +82,8 @@ exports.getAllUsers = async (req, res) => {
 exports.getDashboardStats = async (req, res) => {
   try {
     const [users, requestCount] = await Promise.all([
-      prisma.user.findMany({
-        select: { role: true }
-      }),
-      prisma.request.count()
+      User.find().select('role'),
+      Request.countDocuments()
     ]);
 
     const activeRoles = new Set(users.map((user) => user.role)).size;
@@ -112,15 +104,13 @@ exports.deleteUser = async (req, res) => {
     const { id } = req.params;
     
     // Check if user exists
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Delete user
-    await prisma.user.delete({
-      where: { id }
-    });
+    await User.findByIdAndDelete(id);
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {

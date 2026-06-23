@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Download, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import '../styles/RequestHistory.css'; // Import the new CSS file
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -25,73 +26,73 @@ const RequestHistory = () => {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'PENDING_ADVISOR':
-        return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700"><Clock size={12} className="mr-1"/> Awaiting Advisor</span>;
+        return <span className="request-status-badge request-status-pending-advisor"><Clock size={12} className="request-status-icon"/> Awaiting Advisor</span>;
       case 'PENDING_HOD':
-        return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700"><Clock size={12} className="mr-1"/> Awaiting HOD</span>;
+        return <span className="request-status-badge request-status-pending-hod"><Clock size={12} className="request-status-icon"/> Awaiting HOD</span>;
       case 'APPROVED':
-        return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700"><CheckCircle size={12} className="mr-1"/> Approved</span>;
+        return <span className="request-status-badge request-status-approved"><CheckCircle size={12} className="request-status-icon"/> Approved</span>;
       case 'REJECTED':
-        return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700"><XCircle size={12} className="mr-1"/> Rejected</span>;
+        return <span className="request-status-badge request-status-rejected"><XCircle size={12} className="request-status-icon"/> Rejected</span>;
       default:
-        return <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-700">{status}</span>;
+        return <span className="request-status-badge request-status-default">{status}</span>;
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-in fade-in duration-500">
-      <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-        <div>
-          <h2 className="text-xl font-bold text-gray-800">Request History</h2>
-          <p className="text-sm text-gray-500 mt-1">Track the status of your submitted documents</p>
+    <div className="request-history-container animate-in fade-in duration-500">
+      <div className="request-history-header">
+        <div className="request-history-header-content">
+          <h2 className="request-history-title">Request History</h2>
+          <p className="request-history-description">Track the status of your submitted documents</p>
         </div>
       </div>
       
       {loading ? (
-        <div className="p-8 text-center text-gray-500">Loading your requests...</div>
+        <div className="request-history-loading">Loading your requests...</div>
       ) : requests.length === 0 ? (
-        <div className="p-16 text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-          <p className="text-lg font-medium text-gray-800">No requests found</p>
-          <p className="text-gray-500 mt-1">You haven't submitted any letter requests yet.</p>
+        <div className="request-history-no-requests">
+          <AlertCircle className="request-history-no-requests-icon" />
+          <p className="request-history-no-requests-title">No requests found</p>
+          <p className="request-history-no-requests-message">You haven't submitted any letter requests yet.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Note</th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Document</th>
+        <div className="request-history-table-wrapper">
+          <table className="request-history-table">
+            <thead className="request-history-table-head">
+              <tr className="request-history-table-row-head">
+                <th scope="col" className="request-history-table-th">Date</th>
+                <th scope="col" className="request-history-table-th">Type</th>
+                <th scope="col" className="request-history-table-th">Status</th>
+                <th scope="col" className="request-history-table-th">Note</th>
+                <th scope="col" className="request-history-table-th request-history-table-th-right">Document</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
+            <tbody className="request-history-table-body">
               {requests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <tr key={request.id} className="request-history-table-row">
+                  <td className="request-history-table-td request-history-date">
                     {new Date(request.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="request-history-table-td request-history-type">
                     {request.type.replace('_', ' ')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="request-history-table-td request-history-status">
                     {getStatusBadge(request.status)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-red-500">
+                  <td className="request-history-table-td request-history-note">
                     {request.status === 'REJECTED' && request.rejectionReason ? request.rejectionReason : '-'}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="request-history-table-td request-history-document-cell">
                     {request.status === 'APPROVED' && request.signedDocPath ? (
                       <a 
                         href={`${API}/${request.signedDocPath}`} 
                         target="_blank" rel="noreferrer"
-                        className="inline-flex items-center text-primary-600 hover:text-primary-900 transition-colors"
+                        className="request-history-download-link"
                       >
-                        <Download size={16} className="mr-1" /> Download PDF
+                        <Download size={16} className="request-history-download-icon" /> Download PDF
                       </a>
                     ) : (
-                      <span className="text-gray-400">Not Available</span>
+                      <span className="request-history-not-available">Not Available</span>
                     )}
                   </td>
                 </tr>

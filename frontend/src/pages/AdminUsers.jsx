@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { UserPlus, Hash, Trash2 } from 'lucide-react';
+import '../styles/AdminUsers.css'; // Import the new CSS file
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -62,7 +63,7 @@ const AdminUsers = () => {
     if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       return;
     }
-    
+
     try {
       await axios.delete(`${API}/api/admin/users/${userId}`);
       alert('User deleted successfully');
@@ -73,127 +74,119 @@ const AdminUsers = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
+    <div className="admin-users-container animate-in fade-in duration-500">
+      <div className="admin-users-grid-cards">
+
         {/* Add Roll Number Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center">
-              <Hash size={20} className="mr-2 text-primary-600" />
+        <div className="admin-users-card">
+          <div className="admin-users-card-header">
+            <h3 className="admin-users-card-title">
+              <Hash size={20} className="admin-users-card-icon" />
               Pre-Register Student
             </h3>
-            <p className="text-sm text-gray-500 mt-1">Add a roll number to allow a student to register.</p>
+            <p className="admin-users-card-description">Add a roll number to allow a student to register.</p>
           </div>
-          <div className="p-6">
-            <form onSubmit={handleAddRoll} className="flex gap-4">
-              <input 
-                type="text" 
+          <div className="admin-users-card-body">
+            <form onSubmit={handleAddRoll} className="admin-users-form-inline">
+              <input
+                type="text"
                 value={rollNo}
                 onChange={e => setRollNo(e.target.value)}
                 placeholder="Enter Roll Number"
                 required
-                className="flex-1 px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="admin-users-input"
               />
-              <button 
+              <button
                 type="submit"
-                className="px-6 py-2 bg-primary-800 text-white font-medium rounded-lg hover:bg-primary-900 transition-colors"
+                className="admin-users-button-primary"
               >
-                Add 
+                Add
               </button>
             </form>
           </div>
         </div>
 
         {/* Add Faculty/HOD Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
-            <h3 className="text-lg font-bold text-gray-800 flex items-center">
-              <UserPlus size={20} className="mr-2 text-primary-600" />
+        <div className="admin-users-card">
+          <div className="admin-users-card-header">
+            <h3 className="admin-users-card-title">
+              <UserPlus size={20} className="admin-users-card-icon" />
               Pre-Register Staff
             </h3>
-            <p className="text-sm text-gray-500 mt-1">Pre-register Faculty or HOD by Employee ID.</p>
+            <p className="admin-users-card-description">Pre-register Faculty or HOD by Employee ID.</p>
           </div>
-          <div className="p-6">
-            <form onSubmit={handleAddStaff} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <input 
+          <div className="admin-users-card-body">
+            <form onSubmit={handleAddStaff} className="admin-users-form-stacked">
+              <div className="admin-users-form-grid">
+                <input
                   type="text" required placeholder="Employee ID"
-                  value={newStaff.employeeId} onChange={e => setNewStaff({...newStaff, employeeId: e.target.value})}
-                  className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  value={newStaff.employeeId} onChange={e => setNewStaff({ ...newStaff, employeeId: e.target.value })}
+                  className="admin-users-input"
                 />
-                <select 
-                  value={newStaff.role} onChange={e => setNewStaff({...newStaff, role: e.target.value})}
-                  className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500"
+                <select
+                  value={newStaff.role} onChange={e => setNewStaff({ ...newStaff, role: e.target.value })}
+                  className="admin-users-select"
                 >
                   <option value="FACULTY">Faculty Advisor</option>
                   <option value="HOD">HOD</option>
                 </select>
               </div>
-              <button 
+              <button
                 type="submit"
-                className="w-full mt-4 px-6 py-2.5 bg-primary-800 text-white font-medium rounded-lg hover:bg-primary-900 transition-colors"
+                className="admin-users-button-full-width"
               >
                 Pre-Register Staff
               </button>
             </form>
           </div>
         </div>
-
       </div>
 
       {/* Users List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-5 border-b border-gray-100">
-          <h3 className="text-lg font-bold text-gray-800">System Users</h3>
+      <div className="admin-users-table-card">
+        <div className="admin-users-table-header">
+          <h3 className="admin-users-table-title">System Users</h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-100">
-                <th className="py-3 px-6 font-semibold">Name</th>
-                <th className="py-3 px-6 font-semibold">Role</th>
-                <th className="py-3 px-6 font-semibold">Email</th>
-                <th className="py-3 px-6 font-semibold">Roll No / Emp ID</th>
-                <th className="py-3 px-6 font-semibold">Status</th>
-                <th className="py-3 px-6 font-semibold">Faculty Advisor</th>
-                <th className="py-3 px-6 font-semibold text-center">Actions</th>
+        <div className="admin-users-table-wrapper">
+          <table className="admin-users-table">
+            <thead className="admin-users-table-head">
+              <tr className="admin-users-table-row-head">
+                <th className="admin-users-table-th">Name</th>
+                <th className="admin-users-table-th">Role</th>
+                <th className="admin-users-table-th">Email</th>
+                <th className="admin-users-table-th">Roll No / Emp ID</th>
+                <th className="admin-users-table-th">Status</th>
+                <th className="admin-users-table-th">Faculty Advisor</th>
+                <th className="admin-users-table-th admin-users-table-th-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="text-sm">
+            <tbody className="admin-users-table-body">
               {loading ? (
-                <tr><td colSpan="3" className="py-8 text-center text-gray-500">Loading users...</td></tr>
+                <tr><td colSpan="7" className="admin-users-table-loading">Loading users...</td></tr>
               ) : (
                 users.map(u => (
-                  <tr key={u.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                    <td className="py-3 px-6 font-medium text-gray-800">{u.name}</td>
-                    <td className="py-3 px-6">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        u.role === 'ADMIN' ? 'bg-red-50 text-red-600' :
-                        u.role === 'HOD' ? 'bg-purple-50 text-purple-600' :
-                        u.role === 'FACULTY' ? 'bg-blue-50 text-blue-600' :
-                        'bg-green-50 text-green-600'
-                      }`}>
+                  <tr key={u.id} className="admin-users-table-row">
+                    <td className="admin-users-table-td admin-users-table-td-name">{u.name}</td>
+                    <td className="admin-users-table-td">
+                      <span className={`admin-users-role-badge ${u.role === 'ADMIN' ? 'admin-users-role-admin' : u.role === 'HOD' ? 'admin-users-role-hod' : u.role === 'FACULTY' ? 'admin-users-role-faculty' : 'admin-users-role-student'}`}>
                         {u.role}
                       </span>
                     </td>
-                    <td className="py-3 px-6 text-gray-600">
-                      {u.email || <span className="text-gray-400 italic">No Email</span>}
+                    <td className="admin-users-table-td admin-users-table-td-email">
+                      {u.email || <span className="admin-users-text-placeholder">No Email</span>}
                     </td>
-                    <td className="py-3 px-6 text-gray-600 font-medium">
-                      {u.rollNumber || u.employeeId || <span className="text-gray-400 italic">N/A</span>}
+                    <td className="admin-users-table-td admin-users-table-td-id">
+                      {u.rollNumber || u.employeeId || <span className="admin-users-text-placeholder">N/A</span>}
                     </td>
-                    <td className="py-3 px-6">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        u.isActivated ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600'
-                      }`}>
+                    <td className="admin-users-table-td">
+                      <span className={`admin-users-status-badge ${u.isActivated ? 'admin-users-status-active' : 'admin-users-status-pending'}`}>
                         {u.isActivated ? 'Active' : 'Pending'}
                       </span>
                     </td>
-                    <td className="py-3 px-6">
+                    <td className="admin-users-table-td">
                       {u.role === 'STUDENT' ? (
                         <select
-                          className="px-2 py-1.5 text-xs font-semibold border border-gray-200 rounded-md text-gray-700 bg-gray-50 focus:ring-2 focus:ring-primary-500 w-full max-w-[150px] cursor-pointer"
+                          className="admin-users-advisor-select"
                           value={u.advisorId || ''}
                           onChange={(e) => handleAssignAdvisor(u.id, e.target.value)}
                         >
@@ -201,17 +194,17 @@ const AdminUsers = () => {
                           {users
                             .filter(f => f.role === 'FACULTY')
                             .map(f => (
-                              <option key={f.id} value={f.id}>{f.name}</option>
+                              <option key={f.id} value={f.id} className="admin-users-advisor-option">{f.name}</option>
                             ))}
                         </select>
                       ) : (
-                        <span className="text-gray-400 text-xs italic">N/A</span>
+                        <span className="admin-users-text-placeholder admin-users-text-xs-italic">N/A</span>
                       )}
                     </td>
-                    <td className="py-3 px-6 text-center">
-                      <button 
+                    <td className="admin-users-table-td admin-users-table-td-center">
+                      <button
                         onClick={() => handleDeleteUser(u.id)}
-                        className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        className="admin-users-delete-button"
                         title="Delete User"
                       >
                         <Trash2 size={18} />

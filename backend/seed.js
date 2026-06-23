@@ -1,36 +1,42 @@
-const { PrismaClient } = require('@prisma/client');
+const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
+const connectDB = require('./config/db');
+const User = require('./models/User');
+const PreRegisteredStudent = require('./models/PreRegisteredStudent');
 
-const prisma = new PrismaClient();
+dotenv.config();
 
 async function main() {
+  await connectDB();
+
   const hashedPassword = await bcrypt.hash('admin123', 10);
   
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@docflow.edu' },
-    update: {},
-    create: {
-      email: 'admin@docflow.edu',
-      name: 'System Admin',
-      password: hashedPassword,
-      role: 'ADMIN',
+  const admin = await User.findOneAndUpdate(
+    { email: 'admin@docflow.edu' },
+    {
+      $setOnInsert: {
+        email: 'admin@docflow.edu',
+        name: 'System Admin',
+        password: hashedPassword,
+        role: 'ADMIN',
+      },
     },
-  });
+    { returnDocument: 'after', upsert: true }
+  );
 
   console.log('Admin user created/verified:', admin);
 
-  const preReg = await prisma.preRegisteredStudent.upsert({
-    where: { rollNumber: '1001' },
-    update: {},
-    create: {
-      rollNumber: '1001',
-    }
-  });
+  await PreRegisteredStudent.findOneAndUpdate(
+    { rollNumber: '1001' },
+    { $setOnInsert: { rollNumber: '1001' } },
+    { returnDocument: 'after', upsert: true }
+  );
   console.log('Pre-registered student 1001 added');
 }
 
 main()
   .catch((e) => console.error(e))
   .finally(async () => {
-    await prisma.$disconnect();
+    await mongoose.disconnect();
   });

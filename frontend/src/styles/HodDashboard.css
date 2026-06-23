@@ -1,0 +1,577 @@
+/* HodDashboard.css */
+
+.hod-dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    /* space-y-6 */
+}
+
+.hod-dashboard-header-card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-gray-100);
+    padding: var(--spacing-8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hod-dashboard-header-content {
+    /* No specific styles needed for this div beyond its children */
+}
+
+.hod-dashboard-title {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-800);
+}
+
+.hod-dashboard-header-card p {
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-1);
+}
+
+.hod-dashboard-header-card .bg-purple-50 {
+    background-color: var(--color-purple-50);
+    color: var(--color-purple-700);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    font-weight: var(--font-weight-bold);
+}
+
+.hod-dashboard-header-card .bg-purple-50 svg {
+    margin-right: var(--spacing-2);
+}
+
+/* Banner Styles (Error, Warning, Success) */
+.hod-dashboard-banner {
+    padding: var(--spacing-4);
+    border-left: 4px solid;
+    border-top-right-radius: var(--radius-2xl);
+    border-bottom-right-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-6);
+}
+
+.hod-dashboard-banner-error {
+    background-color: var(--color-red-50);
+    border-color: var(--color-red-400);
+}
+
+.hod-dashboard-banner-warning {
+    background-color: var(--color-yellow-50);
+    border-color: var(--color-yellow-400);
+}
+
+.hod-dashboard-banner-success {
+    background-color: var(--color-green-50);
+    border-color: var(--color-green-500);
+}
+
+.hod-dashboard-banner-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.hod-dashboard-banner-content-with-icon {
+    display: flex;
+    align-items: flex-start;
+}
+
+.hod-dashboard-banner-icon-wrapper {
+    flex-shrink: 0;
+}
+
+.hod-dashboard-banner-icon {
+    height: var(--spacing-6);
+    width: var(--spacing-6);
+}
+
+.hod-dashboard-banner-icon-warning {
+    color: var(--color-yellow-600);
+}
+
+.hod-dashboard-banner-icon-success {
+    color: var(--color-green-600);
+}
+
+.hod-dashboard-banner-text-content {
+    margin-left: var(--spacing-3);
+    flex: 1 1 0%;
+}
+
+.hod-dashboard-banner-text {
+    margin-left: var(--spacing-3);
+    flex: 1 1 0%;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-red-700);
+}
+
+.hod-dashboard-banner-dismiss-button {
+    color: var(--color-red-600);
+    transition: color var(--transition-base);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.hod-dashboard-banner-dismiss-button:hover {
+    color: var(--color-red-800);
+}
+
+.hod-dashboard-banner-title-warning {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-yellow-800);
+}
+
+.hod-dashboard-banner-description-warning {
+    margin-top: var(--spacing-1);
+    font-size: var(--font-size-sm);
+    color: var(--color-yellow-700);
+}
+
+.hod-dashboard-banner-actions {
+    margin-top: var(--spacing-4);
+}
+
+.hod-dashboard-button-warning {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background-color: var(--color-yellow-500);
+    color: var(--color-white);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.hod-dashboard-button-warning:hover {
+    background-color: var(--color-yellow-600);
+}
+
+.hod-dashboard-button-disabled {
+    opacity: 0.7;
+    pointer-events: none;
+    cursor: not-allowed;
+}
+
+.hod-dashboard-banner-title-success {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-green-800);
+}
+
+.hod-dashboard-banner-description-success {
+    margin-top: var(--spacing-1);
+    font-size: var(--font-size-sm);
+    color: var(--color-green-700);
+}
+
+.hod-dashboard-signature-preview-wrapper {
+    margin-top: var(--spacing-3);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+}
+
+.hod-dashboard-signature-preview {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-green-200);
+    border-radius: var(--radius-base);
+    /* Assuming 'rounded' maps to radius-base */
+    padding: var(--spacing-2);
+    height: var(--spacing-16);
+    width: var(--spacing-32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hod-dashboard-signature-image {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.hod-dashboard-banner-actions-responsive {
+    margin-top: var(--spacing-4);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    /* For multiple buttons */
+}
+
+.hod-dashboard-banner-actions-responsive-item {
+    margin-top: var(--spacing-3);
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+
+    /* sm breakpoint */
+    .hod-dashboard-banner-content-responsive {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .hod-dashboard-banner-actions-responsive {
+        margin-top: var(--spacing-0);
+        margin-left: var(--spacing-4);
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .hod-dashboard-banner-actions-responsive-item {
+        margin-top: var(--spacing-0);
+        margin-left: var(--spacing-4);
+    }
+}
+
+.hod-dashboard-button-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-green-300);
+    color: var(--color-green-700);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.hod-dashboard-button-secondary:hover {
+    background-color: var(--color-green-100);
+}
+
+.hod-dashboard-button-success {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-green-600);
+    color: var(--color-white);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.hod-dashboard-button-success:hover {
+    background-color: var(--color-green-700);
+}
+
+.hod-dashboard-button-icon {
+    margin-right: var(--spacing-1-5);
+}
+
+/* Stats Cards */
+.hod-dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* grid-cols-1 */
+    gap: var(--spacing-6);
+}
+
+@media (min-width: 768px) {
+
+    /* md breakpoint */
+    .hod-dashboard-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* md:grid-cols-2 */
+    }
+}
+
+@media (min-width: 1024px) {
+
+    /* lg breakpoint */
+    .hod-dashboard-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        /* lg:grid-cols-4 */
+    }
+}
+
+.hod-dashboard-stat-card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-gray-100);
+    padding: var(--spacing-6);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    /* space-x-4 */
+}
+
+.hod-dashboard-stat-icon-wrapper {
+    padding: var(--spacing-3);
+    border-radius: var(--radius-xl);
+}
+
+.hod-dashboard-stat-icon-purple {
+    background-color: var(--color-purple-50);
+    color: var(--color-purple-600);
+}
+
+.hod-dashboard-stat-icon-yellow {
+    background-color: var(--color-yellow-50);
+    color: var(--color-yellow-600);
+}
+
+.hod-dashboard-stat-icon-green {
+    background-color: var(--color-green-50);
+    color: var(--color-green-600);
+}
+
+.hod-dashboard-stat-icon-red {
+    background-color: var(--color-red-50);
+    color: var(--color-red-600);
+}
+
+.hod-dashboard-stat-content {
+    /* No specific styles needed for this div beyond its children */
+}
+
+.hod-dashboard-stat-label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-500);
+}
+
+.hod-dashboard-stat-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-800);
+}
+
+/* Table Styles */
+.hod-dashboard-table-card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-gray-100);
+    overflow: hidden;
+}
+
+.hod-dashboard-table-loading {
+    padding: var(--spacing-12);
+    text-align: center;
+    color: var(--color-gray-500);
+}
+
+.hod-dashboard-no-requests {
+    padding: var(--spacing-16);
+    text-align: center;
+}
+
+.hod-dashboard-no-requests-icon {
+    margin-left: auto;
+    margin-right: auto;
+    height: var(--spacing-16);
+    width: var(--spacing-16);
+    color: var(--color-green-300);
+    margin-bottom: var(--spacing-4);
+}
+
+.hod-dashboard-no-requests-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-800);
+}
+
+.hod-dashboard-no-requests-message {
+    color: var(--color-gray-500);
+    margin-top: var(--spacing-2);
+}
+
+.hod-dashboard-table-wrapper {
+    overflow-x: auto;
+}
+
+.hod-dashboard-table {
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+.hod-dashboard-table-head {
+    background-color: var(--color-gray-50);
+}
+
+.hod-dashboard-table-row-head {
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.hod-dashboard-table-th {
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-500);
+    text-transform: uppercase;
+}
+
+.hod-dashboard-table-th-left {
+    text-align: left;
+}
+
+.hod-dashboard-table-th-center {
+    text-align: center;
+}
+
+.hod-dashboard-table-th-right {
+    text-align: right;
+}
+
+.hod-dashboard-table-body {
+    /* divide-y divide-gray-100 */
+}
+
+.hod-dashboard-table-body tr {
+    border-top: 1px solid var(--color-gray-100);
+}
+
+.hod-dashboard-table-row {
+    transition: background-color var(--transition-base);
+}
+
+.hod-dashboard-table-row:hover {
+    background-color: rgba(249, 250, 251, 0.5);
+    /* hover:bg-gray-50/50 */
+}
+
+.hod-dashboard-table-td {
+    padding: var(--spacing-4) var(--spacing-6);
+}
+
+.hod-dashboard-student-name {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
+}
+
+.hod-dashboard-student-rollno {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+}
+
+.hod-dashboard-request-type {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+}
+
+.hod-dashboard-request-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-500);
+}
+
+.hod-dashboard-preview-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem var(--spacing-3);
+    background-color: var(--color-gray-100);
+    color: var(--color-gray-700);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    transition: all var(--transition-base);
+}
+
+.hod-dashboard-preview-button:hover {
+    background-color: var(--color-gray-200);
+}
+
+.hod-dashboard-preview-button-icon {
+    margin-right: var(--spacing-1-5);
+}
+
+.hod-dashboard-reject-form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-2);
+}
+
+.hod-dashboard-reject-input {
+    padding: 0.375rem var(--spacing-3);
+    border: 1px solid var(--color-red-200);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    outline: none;
+}
+
+.hod-dashboard-reject-input:focus {
+    border-color: var(--color-red-500);
+}
+
+.hod-dashboard-reject-confirm-button {
+    background-color: var(--color-red-500);
+    color: var(--color-white);
+    padding: 0.375rem var(--spacing-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.hod-dashboard-reject-cancel-button {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-700);
+    padding: 0.375rem var(--spacing-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.hod-dashboard-action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--spacing-2);
+}
+
+.hod-dashboard-approve-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem var(--spacing-3);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--transition-base);
+    background-color: var(--color-green-50);
+    color: var(--color-green-700);
+    border: 1px solid var(--color-green-200);
+}
+
+.hod-dashboard-approve-button:hover {
+    background-color: var(--color-green-100);
+}
+
+.hod-dashboard-reject-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.375rem var(--spacing-3);
+    background-color: var(--color-red-50);
+    color: var(--color-red-700);
+    border: 1px solid var(--color-red-200);
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    transition: all var(--transition-base);
+}
+
+.hod-dashboard-reject-button:hover {
+    background-color: var(--color-red-100);
+}

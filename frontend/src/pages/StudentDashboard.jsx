@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import '../styles/StudentDashboard.css'; // Import the new CSS file
 import { FilePlus, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL;
@@ -26,17 +27,17 @@ const StudentDashboard = () => {
   }, []);
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="student-dashboard-container animate-in fade-in slide-in-from-bottom-4 duration-500">
       
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-primary-800 to-primary-600 rounded-2xl p-8 shadow-md text-white overflow-hidden relative">
-        <div className="absolute top-0 right-0 -mr-8 -mt-8 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>
-        <div className="relative z-10">
-          <h2 className="text-3xl font-bold mb-2">Welcome, {user.name}</h2>
-          <p className="text-primary-100 font-medium">DocFlow makes it easy to submit and track your department requests. Get your letters signed digitally without the wait.</p>
-          <div className="mt-6">
-            <Link to="/student/submit" className="inline-flex items-center px-6 py-3 bg-accent-500 hover:bg-accent-600 text-primary-900 font-bold rounded-xl transition-colors shadow-sm">
-              <FilePlus className="mr-2" size={20} />
+      <div className="student-dashboard-welcome-banner">
+        <div className="student-dashboard-welcome-banner-circle"></div>
+        <div className="student-dashboard-welcome-banner-content">
+          <h2 className="student-dashboard-welcome-title">Welcome, {user.name}</h2>
+          <p className="student-dashboard-welcome-message">DocFlow makes it easy to submit and track your department requests. Get your letters signed digitally without the wait.</p>
+          <div className="student-dashboard-welcome-actions">
+            <Link to="/student/submit" className="student-dashboard-new-request-button">
+              <FilePlus className="student-dashboard-new-request-icon" size={20} />
               New Request
             </Link>
           </div>
@@ -44,25 +45,24 @@ const StudentDashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-blue-50 text-blue-500 rounded-xl"><FilePlus size={24} /></div>
-          <div><p className="text-gray-500 text-sm font-medium">Total Requests</p><h3 className="text-2xl font-bold text-gray-800">{stats.total}</h3></div>
+      <div className="student-dashboard-stats-grid">
+        <div className="student-dashboard-stat-card">
+          <div className="student-dashboard-stat-icon-wrapper student-dashboard-stat-icon-blue"><FilePlus size={24} /></div>
+          <div className="student-dashboard-stat-content"><p className="student-dashboard-stat-label">Total Requests</p><h3 className="student-dashboard-stat-value">{stats.total}</h3></div>
         </div>
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-yellow-50 text-yellow-500 rounded-xl"><Clock size={24} /></div>
-          <div><p className="text-gray-500 text-sm font-medium">Pending</p><h3 className="text-2xl font-bold text-gray-800">{stats.pending}</h3></div>
+        <div className="student-dashboard-stat-card">
+          <div className="student-dashboard-stat-icon-wrapper student-dashboard-stat-icon-yellow"><Clock size={24} /></div>
+          <div className="student-dashboard-stat-content"><p className="student-dashboard-stat-label">Pending</p><h3 className="student-dashboard-stat-value">{stats.pending}</h3></div>
         </div>
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-green-50 text-green-500 rounded-xl"><CheckCircle size={24} /></div>
-          <div><p className="text-gray-500 text-sm font-medium">Approved</p><h3 className="text-2xl font-bold text-gray-800">{stats.approved}</h3></div>
+        <div className="student-dashboard-stat-card">
+          <div className="student-dashboard-stat-icon-wrapper student-dashboard-stat-icon-green"><CheckCircle size={24} /></div>
+          <div className="student-dashboard-stat-content"><p className="student-dashboard-stat-label">Approved</p><h3 className="student-dashboard-stat-value">{stats.approved}</h3></div>
         </div>
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
-          <div className="p-3 bg-red-50 text-red-500 rounded-xl"><XCircle size={24} /></div>
-          <div><p className="text-gray-500 text-sm font-medium">Rejected</p><h3 className="text-2xl font-bold text-gray-800">{stats.rejected}</h3></div>
+        <div className="student-dashboard-stat-card">
+          <div className="student-dashboard-stat-icon-wrapper student-dashboard-stat-icon-red"><XCircle size={24} /></div>
+          <div className="student-dashboard-stat-content"><p className="student-dashboard-stat-label">Rejected</p><h3 className="student-dashboard-stat-value">{stats.rejected}</h3></div>
         </div>
       </div>
-
     </div>
   );
 };

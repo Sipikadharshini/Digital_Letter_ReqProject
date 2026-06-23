@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import '../styles/HodDashboard.css'; // Import the new CSS file
 import { FileSignature, CheckCircle, XCircle, Eye, FileText, Clock, Upload, PenTool } from 'lucide-react';
 import DocumentPreview from '../components/DocumentPreview';
 
-const API = import.meta.env.VITE_API_URL;
+const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
 
 const HodDashboard = () => {
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [rejectingId, setRejectingId] = useState(null);
@@ -16,13 +17,20 @@ const HodDashboard = () => {
   const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, rejected: 0 });
   const [profile, setProfile] = useState(null);
   const [uploadingSignature, setUploadingSignature] = useState(false);
+  const [profileError, setProfileError] = useState(null);
+  const [uploadError, setUploadError] = useState(null);
+  const [signatureFile, setSignatureFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   const fetchProfile = async () => {
     try {
       const { data } = await axios.get(`${API}/api/users/profile`);
+      setProfileError(null); // Clear any previous error
       setProfile(data);
     } catch (error) {
-       console.error("Profile fetch error", error);
+      console.error("Profile fetch error", error);
+      setProfile(null);
+      setProfileError(error.response?.data?.message || error.message || 'Failed to load profile');
     }
   };
 
@@ -42,30 +50,68 @@ const HodDashboard = () => {
   };
 
   useEffect(() => {
+    if (user) {
+      setProfile(user);
+    }
     fetchProfile();
     fetchRequests();
-  }, []);
+  }, [user]);
 
-  const handleSignatureUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleChooseSignature = () => {
+    setUploadError(null);
+    fileInputRef.current?.click();
+  };
+
+  const handleSignatureFileChange = (event) => {
+    const file = event.target.files?.[0];
     if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please upload a valid signature image.');
+      setSignatureFile(null);
+      return;
+    }
+    setSignatureFile(file);
+    setUploadError(null);
+  };
+
+  const handleSaveSignature = async () => {
+    if (!signatureFile) {
+      return alert('Please upload a signature image first.');
+    }
+
+    setUploadError(null);
+    setUploadingSignature(true);
 
     const formData = new FormData();
-    formData.append('signature', file);
-    setUploadingSignature(true);
+    formData.append('signature', signatureFile, signatureFile.name);
 
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${API}/api/users/signature`, formData, {
-        headers: { 
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}` 
-        }
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        timeout: 60000,
       });
-      alert('Signature uploaded successfully!');
-      fetchProfile(); 
+      alert('Signature saved successfully!');
+      setSignatureFile(null);
+      setUploadError(null);
+      if (refreshProfile) {
+        const updatedProfile = await refreshProfile();
+        if (updatedProfile) {
+          setProfile(updatedProfile);
+        }
+      } else {
+        fetchProfile();
+      }
     } catch (error) {
-      alert('Failed to upload signature: ' + (error.response?.data?.message || error.message));
+      const message = error.response?.data?.message
+        || (error.code === 'ECONNABORTED' || error.message?.includes('timeout') ? 'Signature upload timed out. Check your network and try again.' : null)
+        || (error.message?.includes('Network Error') ? 'Network error. Check your connection and try again.' : null)
+        || 'Failed to save signature';
+      console.error('Signature upload error', error);
+      setUploadError(message);
+      alert('Failed to save signature: ' + message);
     } finally {
       setUploadingSignature(false);
     }
@@ -96,10 +142,10 @@ const HodDashboard = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">HOD Dashboard</h2>
+    <div className="hod-dashboard-container animate-in fade-in duration-500">
+      <div className="hod-dashboard-header-card">
+        <div className="hod-dashboard-header-content">
+          <h2 className="hod-dashboard-title">HOD Dashboard</h2>
           <p className="text-gray-500 mt-1">Review requests approved by Faculty Advisors</p>
         </div>
         <div className="bg-purple-50 text-purple-700 px-4 py-2 rounded-xl flex items-center font-bold">
@@ -108,24 +154,52 @@ const HodDashboard = () => {
         </div>
       </div>
 
+      {/* Profile Fetch Error Banner */}
+      {profileError && (
+        <div className="hod-dashboard-banner hod-dashboard-banner-error animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="hod-dashboard-banner-content">
+            <div className="hod-dashboard-banner-text">Error loading profile: {profileError}</div>
+            <button onClick={() => setProfileError(null)} className="hod-dashboard-banner-dismiss-button">Dismiss</button>
+          </div>
+        </div>
+      )}
+      {uploadError && (
+        <div className="hod-dashboard-banner hod-dashboard-banner-error animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="hod-dashboard-banner-content">
+            <div className="hod-dashboard-banner-text">{uploadError}</div>
+            <button onClick={() => setUploadError(null)} className="hod-dashboard-banner-dismiss-button">Dismiss</button>
+          </div>
+        </div>
+      )}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleSignatureFileChange}
+      />
+
       {/* Signature Setup Missing Banner */}
       {profile && !profile.signatureUrl && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-2xl shadow-sm animate-in fade-in slide-in-from-top-4 duration-500 mb-6">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <PenTool className="h-6 w-6 text-yellow-600" />
+        <div className="hod-dashboard-banner hod-dashboard-banner-warning animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="hod-dashboard-banner-content-with-icon">
+            <div className="hod-dashboard-banner-icon-wrapper">
+              <PenTool className="hod-dashboard-banner-icon hod-dashboard-banner-icon-warning" />
             </div>
-            <div className="ml-3 flex-1">
-              <h3 className="text-sm font-bold text-yellow-800">Action Required: Setup Your Digital Signature</h3>
-              <div className="mt-1 text-sm text-yellow-700">
-                <p>Before you can approve documents, you must safely upload a picture of your signature to be auto-embedded on approved PDFs.</p>
+            <div className="hod-dashboard-banner-text-content">
+              <h3 className="hod-dashboard-banner-title-warning">Action Required: Upload Your Signature</h3>
+              <div className="hod-dashboard-banner-description-warning">
+                <p>Before you can approve documents, please upload a picture of your signature.</p>
               </div>
-              <div className="mt-4">
-                <label className={`relative cursor-pointer inline-flex items-center space-x-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm ${uploadingSignature ? 'opacity-70 pointer-events-none' : ''}`}>
-                  <Upload size={16} />
-                  <span>{uploadingSignature ? 'Uploading...' : 'Upload Signature Picture (PNG/JPG)'}</span>
-                  <input type="file" className="sr-only" accept="image/png, image/jpeg, image/jpg" onChange={handleSignatureUpload} disabled={uploadingSignature} />
-                </label>
+              <div className="hod-dashboard-banner-actions">
+                <button
+                  onClick={handleChooseSignature}
+                  disabled={uploadingSignature}
+                  className={`hod-dashboard-button-warning ${uploadingSignature ? 'hod-dashboard-button-disabled' : ''}`}
+                >
+                  <Upload size={16} className="hod-dashboard-button-icon" />
+                  <span>Upload Signature Image</span>
+                </button>
               </div>
             </div>
           </div>
@@ -134,146 +208,159 @@ const HodDashboard = () => {
 
       {/* Signature Configured Banner */}
       {profile?.signatureUrl && (
-        <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-2xl shadow-sm animate-in fade-in slide-in-from-top-4 duration-500 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+        <div className="hod-dashboard-banner hod-dashboard-banner-success animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="hod-dashboard-banner-content-with-icon hod-dashboard-banner-content-responsive">
+            <div className="hod-dashboard-banner-icon-wrapper">
+              <CheckCircle className="hod-dashboard-banner-icon hod-dashboard-banner-icon-success" />
             </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-bold text-green-800">Signature Configured</h3>
-              <div className="mt-1 text-sm text-green-700">
-                <p>Your signature will be automatically embedded when you approve documents.</p>
+            <div className="hod-dashboard-banner-text-content">
+              <h3 className="hod-dashboard-banner-title-success">Signature Configured</h3>
+              <div className="hod-dashboard-banner-description-success">
+                <p>Your uploaded signature is saved and will be embedded when you approve documents.</p>
               </div>
-              <div className="mt-3 flex items-center space-x-4">
-                <div className="bg-white border border-green-200 rounded p-2 h-16 w-32 flex items-center justify-center overflow-hidden">
-                  <img src={`${API}/${profile.signatureUrl}`} alt="Your Signature" className="max-h-full max-w-full object-contain" />
+              <div className="hod-dashboard-signature-preview-wrapper">
+                <div className="hod-dashboard-signature-preview">
+                  <img src={`${API}/${profile.signatureUrl}`} alt="Your Signature" className="hod-dashboard-signature-image" />
                 </div>
               </div>
             </div>
           </div>
-          <div className="mt-4 sm:mt-0 sm:ml-4 flex-shrink-0">
-            <label className={`relative cursor-pointer inline-flex items-center space-x-2 bg-white border border-green-300 text-green-700 hover:bg-green-100 px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm ${uploadingSignature ? 'opacity-70 pointer-events-none' : ''}`}>
-              <Upload size={16} />
-              <span>{uploadingSignature ? 'Updating...' : 'Update Signature'}</span>
-              <input type="file" className="sr-only" accept="image/png, image/jpeg, image/jpg" onChange={handleSignatureUpload} disabled={uploadingSignature} />
-            </label>
+          <div className="hod-dashboard-banner-actions-responsive">
+            <button
+              onClick={handleChooseSignature}
+              disabled={uploadingSignature}
+              className={`hod-dashboard-button-secondary ${uploadingSignature ? 'hod-dashboard-button-disabled' : ''}`}
+            >
+              <PenTool size={16} className="hod-dashboard-button-icon" />
+              <span>Upload New Signature</span>
+            </button>
+            {signatureFile && ( /* This button is conditionally rendered, so its container needs to be conditional too */
+              <div className="hod-dashboard-banner-actions-responsive-item">
+                <button
+                  onClick={handleSaveSignature}
+                  disabled={uploadingSignature}
+                  className="hod-dashboard-button-success"
+                >
+                  Save Signature
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Dashboard Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-          <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
+      <div className="hod-dashboard-stats-grid">
+        <div className="hod-dashboard-stat-card">
+          <div className="hod-dashboard-stat-icon-wrapper hod-dashboard-stat-icon-purple">
             <FileText size={24} />
           </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Total Addressed</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.total}</p>
+          <div className="hod-dashboard-stat-content">
+            <p className="hod-dashboard-stat-label">Total Addressed</p>
+            <p className="hod-dashboard-stat-value">{stats.total}</p>
           </div>
         </div>
-        
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-          <div className="p-3 bg-yellow-50 text-yellow-600 rounded-xl">
+
+        <div className="hod-dashboard-stat-card">
+          <div className="hod-dashboard-stat-icon-wrapper hod-dashboard-stat-icon-yellow">
             <Clock size={24} />
           </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Pending Review</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.pending}</p>
+          <div className="hod-dashboard-stat-content">
+            <p className="hod-dashboard-stat-label">Pending Review</p>
+            <p className="hod-dashboard-stat-value">{stats.pending}</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-          <div className="p-3 bg-green-50 text-green-600 rounded-xl">
+        <div className="hod-dashboard-stat-card">
+          <div className="hod-dashboard-stat-icon-wrapper hod-dashboard-stat-icon-green">
             <CheckCircle size={24} />
           </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Approved</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.approved}</p>
+          <div className="hod-dashboard-stat-content">
+            <p className="hod-dashboard-stat-label">Approved</p>
+            <p className="hod-dashboard-stat-value">{stats.approved}</p>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl">
+        <div className="hod-dashboard-stat-card">
+          <div className="hod-dashboard-stat-icon-wrapper hod-dashboard-stat-icon-red">
             <XCircle size={24} />
           </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Rejected</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.rejected}</p>
+          <div className="hod-dashboard-stat-content">
+            <p className="hod-dashboard-stat-label">Rejected</p>
+            <p className="hod-dashboard-stat-value">{stats.rejected}</p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="hod-dashboard-table-card">
         {loading ? (
-          <div className="p-12 text-center text-gray-500">Loading requests...</div>
+          <div className="hod-dashboard-table-loading">Loading requests...</div>
         ) : requests.length === 0 ? (
-          <div className="p-16 text-center">
-            <CheckCircle className="mx-auto h-16 w-16 text-green-300 mb-4" />
-            <p className="text-xl font-bold text-gray-800">All caught up!</p>
-            <p className="text-gray-500 mt-2">No pending items for HOD review.</p>
+          <div className="hod-dashboard-no-requests">
+            <CheckCircle className="hod-dashboard-no-requests-icon" />
+            <p className="hod-dashboard-no-requests-title">All caught up!</p>
+            <p className="hod-dashboard-no-requests-message">No pending items for HOD review.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Student</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Request Type</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase">Date</th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-500 uppercase">Document</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase">Actions</th>
+          <div className="hod-dashboard-table-wrapper">
+            <table className="hod-dashboard-table">
+              <thead className="hod-dashboard-table-head">
+                <tr className="hod-dashboard-table-row-head">
+                  <th className="hod-dashboard-table-th hod-dashboard-table-th-left">Student</th>
+                  <th className="hod-dashboard-table-th hod-dashboard-table-th-left">Request Type</th>
+                  <th className="hod-dashboard-table-th hod-dashboard-table-th-left">Date</th>
+                  <th className="hod-dashboard-table-th hod-dashboard-table-th-center">Document</th>
+                  <th className="hod-dashboard-table-th hod-dashboard-table-th-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="hod-dashboard-table-body">
                 {requests.map(req => (
-                  <tr key={req.id} className="hover:bg-gray-50/50">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-gray-900">{req.student.name}</div>
-                      <div className="text-xs text-gray-500">{req.student.rollNumber}</div>
+                  <tr key={req.id} className="hod-dashboard-table-row">
+                    <td className="hod-dashboard-table-td">
+                      <div className="hod-dashboard-student-name">{req.student.name}</div>
+                      <div className="hod-dashboard-student-rollno">{req.student.rollNumber}</div>
                     </td>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-700">
+                    <td className="hod-dashboard-table-td hod-dashboard-request-type">
                       {req.type.replace('_', ' ')}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="hod-dashboard-table-td hod-dashboard-request-date">
                       {new Date(req.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <button 
+                    <td className="hod-dashboard-table-td hod-dashboard-table-td-center">
+                      <button
                         onClick={() => setPreviewRequest(req)}
-                        className="inline-flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors"
+                        className="hod-dashboard-preview-button"
                       >
-                        <Eye size={16} className="mr-1.5" /> Preview
+                        <Eye size={16} className="hod-dashboard-preview-button-icon" /> Preview
                       </button>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="hod-dashboard-table-td hod-dashboard-table-td-right">
                       {rejectingId === req.id ? (
-                        <div className="flex items-center justify-end space-x-2 animate-in slide-in-from-right-2">
-                          <input 
-                            type="text" 
-                            placeholder="Reason for rejection..." 
+                        <div className="hod-dashboard-reject-form animate-in slide-in-from-right-2">
+                          <input
+                            type="text"
+                            placeholder="Reason for rejection..."
                             value={reason} onChange={e => setReason(e.target.value)}
-                            className="px-3 py-1.5 border border-red-200 focus:border-red-500 rounded-lg text-sm outline-none"
+                            className="hod-dashboard-reject-input"
                             autoFocus
                           />
-                          <button onClick={() => handleReject(req.id)} className="bg-red-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium">Confirm</button>
-                          <button onClick={() => {setRejectingId(null); setReason('');}} className="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium">Cancel</button>
+                          <button onClick={() => handleReject(req.id)} className="hod-dashboard-reject-confirm-button">Confirm</button>
+                          <button onClick={() => { setRejectingId(null); setReason(''); }} className="hod-dashboard-reject-cancel-button">Cancel</button>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-end space-x-2">
-                          <button 
+                        <div className="hod-dashboard-action-buttons">
+                          <button
                             onClick={() => handleApprove(req.id)}
                             disabled={!profile?.signatureUrl}
-                            className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors
-                              ${!profile?.signatureUrl ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200'}`}
+                            className={`hod-dashboard-approve-button ${!profile?.signatureUrl ? 'hod-dashboard-button-disabled' : ''}`}
                           >
-                            <CheckCircle size={16} className="mr-1.5" /> Approve
+                            <CheckCircle size={16} className="hod-dashboard-button-icon" /> Approve
                           </button>
-                          <button 
+                          <button
                             onClick={() => setRejectingId(req.id)}
-                            className="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 rounded-lg text-sm font-semibold transition-colors"
+                            className="hod-dashboard-reject-button"
                           >
-                            <XCircle size={16} className="mr-1.5" /> Reject
+                            <XCircle size={16} className="hod-dashboard-button-icon" /> Reject
                           </button>
                         </div>
                       )}
@@ -288,11 +375,13 @@ const HodDashboard = () => {
 
       {/* Document Preview Modal */}
       {previewRequest && (
-        <DocumentPreview 
-          request={previewRequest} 
-          onClose={() => setPreviewRequest(null)} 
+        <DocumentPreview
+          request={previewRequest}
+          onClose={() => setPreviewRequest(null)}
         />
       )}
+
+      {/* Signature Pad Modal */}
     </div>
   );
 };

@@ -1,0 +1,351 @@
+/* RegisterStaff.css */
+
+.register-staff-container {
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding-block: var(--spacing-12);
+    /* py-12 */
+}
+
+.register-staff-background-image {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-0);
+    background-size: cover;
+    background-position: center;
+}
+
+.register-staff-background-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    /* bg-black/40 */
+    backdrop-filter: blur(4px);
+    /* backdrop-blur-sm */
+}
+
+.register-staff-card-wrapper {
+    position: relative;
+    z-index: var(--z-10);
+    width: 100%;
+    max-width: var(--max-w-lg);
+    /* max-w-lg */
+    padding-left: var(--spacing-6);
+    /* px-6 */
+    padding-right: var(--spacing-6);
+    /* px-6 */
+}
+
+.register-staff-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    /* bg-white/95 */
+    backdrop-filter: blur(12px);
+    /* backdrop-blur-md */
+    border-radius: var(--radius-2xl);
+    /* rounded-2xl */
+    box-shadow: var(--shadow-2xl);
+    /* shadow-2xl */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /* border border-white/20 */
+    overflow: hidden;
+}
+
+.register-staff-header {
+    background-image: linear-gradient(to right, var(--color-primary-800), var(--color-accent-600));
+    /* bg-gradient-to-r from-primary-800 to-accent-600 */
+    padding: var(--spacing-8);
+    /* px-8 py-8 */
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.register-staff-header-circle-top-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin-right: -var(--spacing-8);
+    /* -mr-8 */
+    margin-top: -var(--spacing-8);
+    /* -mt-8 */
+    width: var(--w-32);
+    /* w-32 */
+    height: var(--h-32);
+    /* h-32 */
+    border-radius: var(--radius-full);
+    /* rounded-full */
+    background-color: rgba(255, 255, 255, 0.1);
+    /* bg-white/10 */
+    filter: blur(2rem);
+    /* blur-2xl */
+}
+
+.register-staff-title {
+    font-size: var(--font-size-3xl);
+    /* text-3xl */
+    font-weight: var(--font-weight-bold);
+    /* font-bold */
+    color: var(--color-white);
+    /* text-white */
+    letter-spacing: -0.025em;
+    /* tracking-tight */
+    position: relative;
+    z-index: var(--z-10);
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
+    /* drop-shadow-sm */
+}
+
+.register-staff-subtitle {
+    color: var(--color-primary-100);
+    /* text-primary-100 */
+    margin-top: var(--spacing-2);
+    /* mt-2 */
+    font-size: var(--font-size-sm);
+    /* text-sm */
+    font-weight: var(--font-weight-medium);
+    /* font-medium */
+    position: relative;
+    z-index: var(--z-10);
+}
+
+.register-staff-form-section {
+    padding: var(--spacing-8);
+    /* p-8 */
+}
+
+.register-staff-error-message {
+    margin-bottom: var(--spacing-6);
+    /* mb-6 */
+    padding: var(--spacing-4);
+    /* p-4 */
+    border-radius: var(--radius-lg);
+    /* rounded-lg */
+    background-color: var(--color-red-50);
+    /* bg-red-50 */
+    border: 1px solid var(--color-red-100);
+    /* border border-red-100 */
+    color: var(--color-red-600);
+    /* text-red-600 */
+    font-size: var(--font-size-sm);
+    /* text-sm */
+    font-weight: var(--font-weight-medium);
+    /* font-medium */
+}
+
+.register-staff-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    /* space-y-4 */
+}
+
+.register-staff-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* grid-cols-1 */
+    gap: var(--spacing-4);
+    /* gap-4 */
+}
+
+@media (min-width: 768px) {
+
+    /* md breakpoint */
+    .register-staff-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* md:grid-cols-2 */
+    }
+}
+
+.register-staff-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    /* space-y-1 */
+}
+
+.register-staff-label {
+    font-size: var(--font-size-xs);
+    /* text-xs */
+    font-weight: var(--font-weight-semibold);
+    /* font-semibold */
+    color: var(--color-gray-700);
+    /* text-gray-700 */
+    text-transform: uppercase;
+    /* uppercase */
+    letter-spacing: 0.05em;
+    /* tracking-wider */
+    margin-left: var(--spacing-1);
+    /* ml-1 */
+}
+
+.register-staff-input-wrapper {
+    position: relative;
+}
+
+.register-staff-input-icon {
+    position: absolute;
+    inset-block-start: 0;
+    /* inset-y-0 */
+    inset-inline-start: 0;
+    /* left-0 */
+    padding-inline-start: var(--spacing-3);
+    /* pl-3 */
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    height: var(--h-4);
+    /* h-4 */
+    width: var(--w-4);
+    /* w-4 */
+    color: var(--color-gray-400);
+    /* text-gray-400 */
+}
+
+.register-staff-input {
+    display: block;
+    width: 100%;
+    padding-inline-start: 2.25rem;
+    /* pl-9 */
+    padding-inline-end: var(--spacing-3);
+    /* pr-3 */
+    padding-block: 0.625rem;
+    /* py-2.5 */
+    background-color: rgba(249, 250, 251, 0.5);
+    /* bg-gray-50/50 */
+    border: 1px solid var(--color-gray-200);
+    /* border border-gray-200 */
+    border-radius: var(--radius-lg);
+    /* rounded-lg */
+    font-size: var(--font-size-sm);
+    /* text-sm */
+    transition: all var(--transition-base);
+    /* transition-all */
+    font-weight: var(--font-weight-medium);
+    /* font-medium */
+}
+
+.register-staff-input::placeholder {
+    color: var(--color-gray-400);
+}
+
+.register-staff-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(207, 181, 59, 0.5);
+    /* focus:ring-2 focus:ring-accent-500/50 */
+    border-color: var(--color-accent-500);
+    /* focus:border-accent-500 */
+}
+
+.register-staff-submit-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    /* space-x-2 */
+    padding: var(--spacing-3) var(--spacing-4);
+    /* py-3 px-4 */
+    border: 1px solid transparent;
+    border-radius: var(--radius-lg);
+    /* rounded-lg */
+    box-shadow: var(--shadow-sm);
+    /* shadow-sm */
+    font-size: var(--font-size-sm);
+    /* text-sm */
+    font-weight: var(--font-weight-bold);
+    /* font-bold */
+    color: var(--color-white);
+    /* text-white */
+    background-color: var(--color-primary-800);
+    /* bg-primary-800 */
+    transition: all var(--transition-base);
+    /* transition-all */
+    margin-top: var(--spacing-6);
+    /* mt-6 */
+}
+
+.register-staff-submit-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-primary-800), 0 0 0 4px rgba(22, 101, 52, 0.5);
+    /* focus:ring-2 focus:ring-offset-2 focus:ring-primary-800 */
+}
+
+.register-staff-submit-button-disabled {
+    opacity: 0.75;
+    /* opacity-75 */
+    cursor: not-allowed;
+    /* cursor-not-allowed */
+}
+
+.register-staff-submit-button-active:hover {
+    background-color: var(--color-primary-900);
+    /* hover:bg-primary-900 */
+    transform: translateY(-0.125rem);
+    /* hover:-translate-y-0.5 */
+    box-shadow: var(--shadow-md);
+    /* shadow-md */
+    box-shadow: var(--shadow-lg);
+    /* hover:shadow-lg */
+}
+
+.register-staff-submit-button-icon {
+    margin-left: var(--spacing-1);
+    /* ml-1 */
+}
+
+.register-staff-footer {
+    background-color: rgba(249, 250, 251, 0.8);
+    /* bg-gray-50/80 */
+    padding: var(--spacing-8) var(--spacing-8) 1.25rem;
+    /* px-8 py-5 */
+    border-top: 1px solid var(--color-gray-100);
+    /* border-t border-gray-100 */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.register-staff-footer-text {
+    font-size: var(--font-size-sm);
+    /* text-sm */
+    color: var(--color-gray-600);
+    /* text-gray-600 */
+    font-weight: var(--font-weight-medium);
+    /* font-medium */
+}
+
+.register-staff-footer-link-accent {
+    font-weight: var(--font-weight-bold);
+    /* font-bold */
+    color: var(--color-accent-600);
+    /* text-accent-600 */
+    transition: color var(--transition-base);
+    /* transition-colors */
+    margin-left: var(--spacing-1);
+    /* ml-1 */
+}
+
+.register-staff-footer-link-accent:hover {
+    color: var(--color-accent-500);
+    /* hover:text-accent-500 */
+}
+
+.register-staff-footer-link-primary {
+    font-weight: var(--font-weight-bold);
+    /* font-bold */
+    color: var(--color-primary-600);
+    /* text-primary-600 */
+    transition: color var(--transition-base);
+    /* transition-colors */
+    margin-left: var(--spacing-1);
+    /* ml-1 */
+}
+
+.register-staff-footer-link-primary:hover {
+    color: var(--color-primary-800);
+    /* hover:text-primary-800 */
+}

@@ -24,12 +24,24 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.get(`${API}/api/users/profile`);
       setUser(data);
+      return data;
     } catch (error) {
       console.error('Failed to fetch profile', error);
       logout();
+      return null;
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshProfile = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    setLoading(true);
+    const data = await fetchProfile();
+    setLoading(false);
+    return data;
   };
 
   const login = async (loginId, password) => {
@@ -53,7 +65,7 @@ export const AuthProvider = ({ children }) => {
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

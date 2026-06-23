@@ -1,0 +1,136 @@
+/* AdminDashboard.css */
+
+.admin-dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    /* space-y-6 */
+}
+
+.admin-dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* grid-cols-1 */
+    gap: var(--spacing-6);
+    /* gap-6 */
+}
+
+@media (min-width: 768px) {
+
+    /* md breakpoint */
+    .admin-dashboard-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* md:grid-cols-2 */
+    }
+}
+
+@media (min-width: 1024px) {
+
+    /* lg breakpoint */
+    .admin-dashboard-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+        /* lg:grid-cols-4 */
+    }
+}
+
+.admin-dashboard-stat-card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-2xl);
+    /* rounded-2xl */
+    padding: var(--spacing-6);
+    /* p-6 */
+    box-shadow: var(--shadow-sm);
+    /* shadow-sm */
+    border: 1px solid var(--color-gray-100);
+    /* border border-gray-100 */
+    display: flex;
+    align-items: flex-start;
+    /* items-start */
+    gap: var(--spacing-4);
+    /* space-x-4 */
+}
+
+.admin-dashboard-stat-icon-wrapper {
+    padding: var(--spacing-3);
+    /* p-3 */
+    border-radius: var(--radius-xl);
+    /* rounded-xl */
+}
+
+.admin-dashboard-stat-icon-blue {
+    background-color: var(--color-blue-50);
+    /* bg-blue-50 */
+    color: var(--color-blue-600);
+    /* text-blue-600 */
+}
+
+.admin-dashboard-stat-icon-green {
+    background-color: var(--color-green-50);
+    /* bg-green-50 */
+    color: var(--color-green-600);
+    /* text-green-600 */
+}
+
+.admin-dashboard-stat-icon-purple {
+    background-color: var(--color-purple-50);
+    /* bg-purple-50 */
+    color: var(--color-purple-600);
+    /* text-purple-600 */
+}
+
+.admin-dashboard-stat-icon-orange {
+    background-color: var(--color-orange-50);
+    /* bg-orange-50 */
+    color: var(--color-orange-600);
+    /* text-orange-600 */
+}
+
+.admin-dashboard-stat-content {
+    /* No specific styles needed for this div beyond its children */
+}
+
+.admin-dashboard-stat-label {
+    color: var(--color-gray-500);
+    /* text-gray-500 */
+    font-size: var(--font-size-sm);
+    /* text-sm */
+    font-weight: var(--font-weight-medium);
+    /* font-medium */
+}
+
+.admin-dashboard-stat-value {
+    font-size: var(--font-size-2xl);
+    /* text-2xl */
+    font-weight: var(--font-weight-bold);
+    /* font-bold */
+    color: var(--color-gray-800);
+    /* text-gray-800 */
+}
+
+.admin-dashboard-welcome-card {
+    background-color: var(--color-white);
+    border-radius: var(--radius-2xl);
+    /* rounded-2xl */
+    box-shadow: var(--shadow-sm);
+    /* shadow-sm */
+    border: 1px solid var(--color-gray-100);
+    /* border border-gray-100 */
+    padding: var(--spacing-8);
+    /* p-8 */
+}
+
+.admin-dashboard-welcome-title {
+    font-size: var(--font-size-xl);
+    /* text-xl */
+    font-weight: var(--font-weight-bold);
+    /* font-bold */
+    color: var(--color-gray-800);
+    /* text-gray-800 */
+    margin-bottom: var(--spacing-4);
+    /* mb-4 */
+}
+
+.admin-dashboard-welcome-text {
+    color: var(--color-gray-600);
+    /* text-gray-600 */
+}
