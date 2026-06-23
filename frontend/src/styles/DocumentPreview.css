@@ -1,0 +1,217 @@
+.document-preview-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: rgba(17, 24, 39, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.document-preview-modal {
+    width: 100%;
+    max-width: 64rem;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.25);
+}
+
+.document-preview-header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #ffffff;
+}
+
+.document-preview-title-group {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.document-preview-title-text {
+    min-width: 0;
+}
+
+.document-preview-title-text h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.document-preview-title-text p {
+    margin: 0.25rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    overflow-wrap: anywhere;
+}
+
+.document-preview-back-button,
+.document-preview-close-button {
+    border: 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.document-preview-back-button {
+    flex: 0 0 auto;
+    min-width: 6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background-color: #f8fafc;
+    color: #1f2937;
+    font-size: 0.875rem;
+    font-weight: 700;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.document-preview-back-button:hover {
+    background-color: #e2e8f0;
+}
+
+.document-preview-close-button {
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background-color: transparent;
+    color: #64748b;
+}
+
+.document-preview-close-button:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+
+.document-preview-body {
+    flex: 1 1 auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    padding: 2rem;
+    background-color: #e5e7eb;
+}
+
+.document-preview-pdf-wrapper {
+    position: relative;
+    width: fit-content;
+    min-height: 842px;
+    background-color: #ffffff;
+    box-shadow: 0 20px 25px rgba(15, 23, 42, 0.15);
+}
+
+.document-preview-document {
+    pointer-events: none;
+}
+
+.document-preview-signature-box {
+    position: absolute;
+    z-index: 10;
+    width: 150px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-width: 3px;
+    border-style: solid;
+    border-radius: 0.375rem;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 15px rgba(15, 23, 42, 0.18);
+    pointer-events: none;
+}
+
+.document-preview-signature-box-faculty {
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+
+.document-preview-signature-box-hod {
+    border-color: #a855f7;
+    color: #6b21a8;
+}
+
+.document-preview-signature-label {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    overflow: hidden;
+    text-align: center;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.document-preview-signature-label span:last-child {
+    margin-top: 0.125rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+@media (max-width: 640px) {
+    .document-preview-overlay {
+        align-items: stretch;
+        padding: 0;
+    }
+
+    .document-preview-modal {
+        height: 100vh;
+        max-width: none;
+        border-radius: 0;
+    }
+
+    .document-preview-header {
+        align-items: flex-start;
+        padding: 0.875rem;
+    }
+
+    .document-preview-title-group {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .document-preview-back-button {
+        min-width: 5.5rem;
+        padding: 0.55rem 0.875rem;
+    }
+
+    .document-preview-title-text h3 {
+        font-size: 1.05rem;
+    }
+
+    .document-preview-body {
+        justify-content: flex-start;
+        padding: 1rem;
+    }
+}
