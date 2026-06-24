@@ -5,7 +5,7 @@ import '../styles/HodDashboard.css'; // Import the new CSS file
 import { FileSignature, CheckCircle, XCircle, Eye, FileText, Clock, Upload, PenTool } from 'lucide-react';
 import DocumentPreview from '../components/DocumentPreview';
 
-const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+const API = import.meta.env.VITE_API_URL || 'https://digital-letter-reqportal.onrender.com';
 
 const HodDashboard = () => {
   const { user, refreshProfile } = useAuth();

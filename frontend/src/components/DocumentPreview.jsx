@@ -3,7 +3,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { X, ArrowLeft } from 'lucide-react';
 import '../styles/DocumentPreview.css';
 
-const API = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+const API = import.meta.env.VITE_API_URL || 'https://digital-letter-reqportal.onrender.com';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -73,11 +73,10 @@ const DocumentPreview = ({ request, onClose }) => {
               return (
                 <div
                   key={i}
-                  className={`document-preview-signature-box ${
-                    coord.role === 'FACULTY'
+                  className={`document-preview-signature-box ${coord.role === 'FACULTY'
                       ? 'document-preview-signature-box-faculty'
                       : 'document-preview-signature-box-hod'
-                  }`}
+                    }`}
                   style={{
                     left: `${coord.x * 100}%`,
                     top: `${coord.y * 100}%`,
