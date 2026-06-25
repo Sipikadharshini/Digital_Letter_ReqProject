@@ -1,12 +1,18 @@
 const nodemailer = require('nodemailer');
 
-// Configure to use a real email service like Gmail
+const smtpPort = Number(process.env.SMTP_PORT || 587);
+
+// Configure SMTP explicitly so deployment uses the same host/port as .env.
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // You can change this to 'outlook', 'yahoo', etc.
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: smtpPort,
+  secure: process.env.SMTP_SECURE === 'true' || smtpPort === 465,
   auth: {
     user: process.env.SMTP_USER, // Your real email address (e.g., yourname@gmail.com)
     pass: process.env.SMTP_PASS  // Your App Password (NOT your regular account password)
-  }
+  },
+  connectionTimeout: 15000,
+  greetingTimeout: 15000,
 });
 
 exports.sendEmail = async (to, subject, text) => {
