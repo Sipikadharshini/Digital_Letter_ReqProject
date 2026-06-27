@@ -1,14 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const EmailOtp = require('../models/EmailOtp');
 const PreRegisteredStudent = require('../models/PreRegisteredStudent');
 const PreRegisteredStaff = require('../models/PreRegisteredStaff');
 const emailService = require('../services/email.service');
 const { isValidEmail } = require('../utils/validation');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
-const OTP_EXPIRY_MINUTES = 10;
 
 const normalizeEmail = (email) => email.trim().toLowerCase();
 const validateStudentEmailDomain = (email) => {
@@ -90,14 +88,10 @@ exports.sendStudentOtp = async (req, res) => {
 
 exports.registerStudent = async (req, res) => {
   try {
-    const { rollNumber, name, email, year, batch, password, otp } = req.body;
+    const { rollNumber, name, email, year, batch, password } = req.body;
 
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: 'Please enter a valid email address.' });
-    }
-
-    if (!otp) {
-      return res.status(400).json({ message: 'Please enter the OTP sent to your email.' });
     }
 
     const normalizedEmail = normalizeEmail(email);
@@ -127,21 +121,6 @@ exports.registerStudent = async (req, res) => {
       return res.status(400).json({ message: 'Roll Number already exists.' });
     }
 
-    const otpRecord = await EmailOtp.findOne({
-      rollNumber,
-      email: normalizedEmail,
-      expiresAt: { $gt: new Date() },
-    });
-
-    if (!otpRecord) {
-      return res.status(400).json({ message: 'OTP expired or not requested. Please request a new OTP.' });
-    }
-
-    const isOtpMatch = await bcrypt.compare(otp, otpRecord.otpHash);
-    if (!isOtpMatch) {
-      return res.status(400).json({ message: 'Invalid OTP.' });
-    }
-
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -159,7 +138,6 @@ exports.registerStudent = async (req, res) => {
 
     // Mark as registered
     await PreRegisteredStudent.findOneAndUpdate({ rollNumber }, { registered: true });
-    await EmailOtp.deleteMany({ rollNumber });
 
     res.status(201).json({ message: 'Registration successful' });
   } catch (error) {

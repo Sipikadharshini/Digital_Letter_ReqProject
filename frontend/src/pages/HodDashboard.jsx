@@ -5,7 +5,7 @@ import '../styles/HodDashboard.css'; // Import the new CSS file
 import { FileSignature, CheckCircle, XCircle, Eye, FileText, Clock, Upload, PenTool } from 'lucide-react';
 import DocumentPreview from '../components/DocumentPreview';
 
-const API = import.meta.env.VITE_API_URL || 'https://digital-letter-reqportal.onrender.com';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const HodDashboard = () => {
   const { user, refreshProfile } = useAuth();
@@ -200,6 +200,15 @@ const HodDashboard = () => {
                   <Upload size={16} className="hod-dashboard-button-icon" />
                   <span>Upload Signature Image</span>
                 </button>
+                {signatureFile && (
+                  <button
+                    onClick={handleSaveSignature}
+                    disabled={uploadingSignature}
+                    className="hod-dashboard-button-success"
+                  >
+                    Save Signature
+                  </button>
+                )}
               </div>
             </div>
           </div>

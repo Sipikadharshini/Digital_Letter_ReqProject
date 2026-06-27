@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
-const API = import.meta.env.VITE_API_URL || 'https://digital-letter-reqportal.onrender.com';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export const useAuth = () => useContext(AuthContext);
 

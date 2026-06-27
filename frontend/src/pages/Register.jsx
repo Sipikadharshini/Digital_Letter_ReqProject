@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { User, Lock, Mail, Hash, BookOpen, GraduationCap, ArrowRight, ShieldCheck } from 'lucide-react';
-import clsx from 'clsx';
+import { User, Lock, Mail, Hash, BookOpen, GraduationCap, ArrowRight } from 'lucide-react';
 import '../styles/Register.css'; // Import the new CSS file
 
 const API = import.meta.env.VITE_API_URL;
@@ -15,41 +14,15 @@ const Register = () => {
     year: '1',
     batch: 'N',
     password: '',
-    confirmPassword: '',
-    otp: ''
+    confirmPassword: ''
   });
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isSendingOtp, setIsSendingOtp] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSendOtp = async () => {
-    setError('');
-    setMessage('');
-
-    if (!formData.rollNumber || !formData.email) {
-      return setError('Enter roll number and email before requesting OTP');
-    }
-
-    setIsSendingOtp(true);
-    try {
-      const { data } = await axios.post(`${API}/api/auth/student/send-otp`, {
-        rollNumber: formData.rollNumber,
-        email: formData.email
-      });
-      setOtpSent(true);
-      setMessage(data.message || 'OTP sent to your email address.');
-    } catch (error) {
-      setError(error.response?.data?.message || 'Failed to send OTP');
-    } finally {
-      setIsSendingOtp(false);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -61,10 +34,6 @@ const Register = () => {
       return setError('Passwords do not match');
     }
 
-    if (!formData.otp) {
-      return setError('Enter the OTP sent to your email');
-    }
-
     setIsLoading(true);
     try {
       await axios.post(`${API}/api/auth/register`, {
@@ -73,8 +42,7 @@ const Register = () => {
         email: formData.email,
         year: formData.year,
         batch: formData.batch,
-        password: formData.password,
-        otp: formData.otp
+        password: formData.password
       });
       navigate('/login', { state: { message: 'Registration successful! You can now login.' } });
     } catch (error) {
@@ -140,27 +108,9 @@ const Register = () => {
 
               <div className="register-form-group">
                 <label className="register-label">Email Address</label>
-                <div className="register-email-otp-group">
-                  <div className="register-input-wrapper flex-1">
-                    <Mail className="register-input-icon" />
-                    <input name="email" type="email" required value={formData.email} onChange={handleChange} className="register-input" placeholder="student@university.edu" />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleSendOtp}
-                    disabled={isSendingOtp}
-                    className={`register-otp-button ${isSendingOtp ? 'register-otp-button-disabled' : ''}`}
-                  >
-                    {isSendingOtp ? 'Sending...' : otpSent ? 'Resend OTP' : 'Send OTP'}
-                  </button>
-                </div>
-              </div>
-
-              <div className="register-form-group">
-                <label className="register-label">Email OTP</label>
                 <div className="register-input-wrapper">
-                  <ShieldCheck className="register-input-icon" />
-                  <input name="otp" type="text" inputMode="numeric" required maxLength={6} value={formData.otp} onChange={handleChange} className="register-input" placeholder="Enter 6 digit OTP" />
+                  <Mail className="register-input-icon" />
+                  <input name="email" type="email" required value={formData.email} onChange={handleChange} className="register-input" placeholder="student@university.edu" />
                 </div>
               </div>
 
@@ -211,8 +161,8 @@ const Register = () => {
 
               <button
                 type="submit"
-                disabled={isLoading || !otpSent}
-                className={`register-submit-button ${isLoading || !otpSent ? 'register-submit-button-disabled' : 'register-submit-button-active'}`}
+                disabled={isLoading}
+                className={`register-submit-button ${isLoading ? 'register-submit-button-disabled' : 'register-submit-button-active'}`}
               >
                 <span>{isLoading ? 'Creating Account...' : 'Register'}</span>
                 {!isLoading && <ArrowRight size={16} className="register-submit-button-icon" />}
